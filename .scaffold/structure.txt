@@ -1,0 +1,127 @@
+package.json
+tsconfig.json
+tsup.config.ts
+README.md
+
+stubs/
+  enum.stub
+  migration.stub
+  model.stub
+  ts.stub
+
+src/
+  bin/
+    cli.ts
+    prisma-migrations.ts
+    prisma-models.ts
+    prisma-types.ts
+
+  cli/
+    commands/
+      init.ts
+      customize.ts
+      generate.ts
+      list.ts
+      clean.ts
+
+    support/
+      generator-block.ts
+      output-paths.ts
+      schema-stubs.ts
+      command-types.ts
+
+    index.ts
+
+  core/
+    prisma/
+      load-merged-datamodel.ts
+      generator-configs.ts
+      dmmf.ts
+
+    config/
+      load-config.ts
+      load-shared-config.ts
+      config-store.ts
+      laravel-config.types.ts
+
+    stubs/
+      resolve-stub.ts
+      format-stub.ts
+      get-stub-path.ts
+      stub-config.types.ts
+
+    writer/
+      backup-path.ts
+      write-with-merge.ts
+
+    formatting/
+      pretty.ts
+
+  generators/
+    migrations/
+      index.ts
+      generator.ts
+      migration.types.ts
+
+      definitions/
+        column-definition.ts
+        model-definition.ts
+        column-definition.types.ts
+
+      rules/
+        actions-map.ts
+        column-maps.ts
+        rule-definition.ts
+        rules.ts
+
+      printer/
+        migration-printer.ts
+
+    models/
+      index.ts
+      generator.ts
+      model.types.ts
+
+      relations/
+        index.ts
+        morph.ts
+        template-builder.ts
+        relation.types.ts
+
+      printer/
+        model-printer.ts
+
+    typescript/
+      index.ts
+      generator.ts
+      directives.ts
+      typescript.types.ts
+
+      printer/
+        typescript-printer.ts
+
+  shared/
+    build/
+      build-model-content.ts
+
+    clean/
+      clean-generated.ts
+
+    sorting/
+      sort-migrations.ts
+
+    naming/
+      decorate.ts
+
+    directives/
+      parse-directives.ts
+
+    utils/
+      strings.ts
+      arrays.ts
+      paths.ts
+
+  index.ts
+
+types/
+  global.d.ts

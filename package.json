@@ -1,7 +1,33 @@
 {
   "name": "laraschema",
-  "version": "0.0.0",
-  "description": "Prisma generator tool for laravel",
+  "version": "0.0.1",
+  "description": "Generate Laravel migrations, models, enums, and TypeScript declarations from Prisma schemas",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "stubs",
+    "README.md",
+    "LICENSE"
+  ],
+  "bin": {
+    "laraschema": "./dist/bin/cli.js",
+    "lsh": "./dist/bin/cli.js",
+    "laraschema-migrations": "./dist/bin/prisma-migrations.js",
+    "laraschema-models": "./dist/bin/prisma-models.js",
+    "laraschema-types": "./dist/bin/prisma-types.js"
+  },
+  "keywords": [
+    "prisma",
+    "laravel",
+    "migrations",
+    "models",
+    "enums",
+    "typescript",
+    "prisma-laravel",
+    "laraschema"
+  ],
   "homepage": "https://github.com/timeax/laraschema#readme",
   "bugs": {
     "url": "https://github.com/timeax/laraschema/issues"
@@ -11,10 +37,41 @@
     "url": "git+https://github.com/timeax/laraschema.git"
   },
   "license": "MIT",
-  "author": "Timeax",
-  "type": "module",
-  "main": "dist/index.js",
+  "author": "David Okpako",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "rm -rf dist && tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "npm run build && node --test tests/*.test.mjs",
+    "test:prisma": "npx prisma generate --schema=tests/small.prisma",
+    "trace": "prodex -i \"src/**,stubs/**,types/**,package.json\" --name=laraschema",
+    "start": "npm run dev",
+    "commit-if-needed": "git diff --quiet || git add . && git commit -m \"Release commit before publish\"",
+    "prepublishOnly": "npm run build && npm run commit-if-needed",
+    "postpublish": "npm version patch",
+    "install:dev": "npm run build && npm link",
+    "uninstall:dev": "npm unlink"
+  },
+  "dependencies": {
+    "@prettier/plugin-php": "^0.24.0",
+    "@prisma/generator-helper": "^6.19.3",
+    "@prisma/internals": "^7.8.0",
+    "change-case": "^5.4.4",
+    "commander": "^14.0.3",
+    "dayjs": "^1.11.20",
+    "ejs": "^3.1.10",
+    "minimatch": "^10.2.5",
+    "node-diff3": "^3.2.0",
+    "pluralize": "^8.0.0",
+    "prettier": "^3.8.3"
+  },
+  "devDependencies": {
+    "@types/ejs": "^3.1.5",
+    "@types/node": "^24.12.2",
+    "jest": "^30.3.0",
+    "ts-node": "^10.9.2",
+    "tsup": "^8.5.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
   }
 }

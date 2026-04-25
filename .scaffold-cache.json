@@ -1,0 +1,488 @@
+{
+  "version": 1,
+  "entries": {
+    "tsconfig.json": {
+      "path": "tsconfig.json",
+      "createdAt": "2026-04-25T04:30:42.245Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "README.md": {
+      "path": "README.md",
+      "createdAt": "2026-04-25T04:30:42.253Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "stubs/enum.stub": {
+      "path": "stubs/enum.stub",
+      "createdAt": "2026-04-25T04:30:42.255Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "stubs/migration.stub": {
+      "path": "stubs/migration.stub",
+      "createdAt": "2026-04-25T04:30:42.256Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "stubs/model.stub": {
+      "path": "stubs/model.stub",
+      "createdAt": "2026-04-25T04:30:42.257Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "stubs/ts.stub": {
+      "path": "stubs/ts.stub",
+      "createdAt": "2026-04-25T04:30:42.258Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/bin/cli.ts": {
+      "path": "src/bin/cli.ts",
+      "createdAt": "2026-04-25T04:30:42.260Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/bin/prisma-migrations.ts": {
+      "path": "src/bin/prisma-migrations.ts",
+      "createdAt": "2026-04-25T04:30:42.262Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/bin/prisma-models.ts": {
+      "path": "src/bin/prisma-models.ts",
+      "createdAt": "2026-04-25T04:30:42.263Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/bin/prisma-types.ts": {
+      "path": "src/bin/prisma-types.ts",
+      "createdAt": "2026-04-25T04:30:42.265Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/cli/commands/init.ts": {
+      "path": "src/cli/commands/init.ts",
+      "createdAt": "2026-04-25T04:30:42.267Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/cli/commands/customize.ts": {
+      "path": "src/cli/commands/customize.ts",
+      "createdAt": "2026-04-25T04:30:42.268Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/cli/commands/generate.ts": {
+      "path": "src/cli/commands/generate.ts",
+      "createdAt": "2026-04-25T04:30:42.269Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/cli/commands/list.ts": {
+      "path": "src/cli/commands/list.ts",
+      "createdAt": "2026-04-25T04:30:42.270Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/cli/commands/clean.ts": {
+      "path": "src/cli/commands/clean.ts",
+      "createdAt": "2026-04-25T04:30:42.271Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/cli/support/generator-block.ts": {
+      "path": "src/cli/support/generator-block.ts",
+      "createdAt": "2026-04-25T04:30:42.272Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/cli/support/output-paths.ts": {
+      "path": "src/cli/support/output-paths.ts",
+      "createdAt": "2026-04-25T04:30:42.273Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/cli/support/schema-stubs.ts": {
+      "path": "src/cli/support/schema-stubs.ts",
+      "createdAt": "2026-04-25T04:30:42.274Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/cli/support/command-types.ts": {
+      "path": "src/cli/support/command-types.ts",
+      "createdAt": "2026-04-25T04:30:42.276Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/cli/index.ts": {
+      "path": "src/cli/index.ts",
+      "createdAt": "2026-04-25T04:30:42.277Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/core/prisma/load-merged-datamodel.ts": {
+      "path": "src/core/prisma/load-merged-datamodel.ts",
+      "createdAt": "2026-04-25T04:30:42.279Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/core/prisma/generator-configs.ts": {
+      "path": "src/core/prisma/generator-configs.ts",
+      "createdAt": "2026-04-25T04:30:42.281Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/core/prisma/dmmf.ts": {
+      "path": "src/core/prisma/dmmf.ts",
+      "createdAt": "2026-04-25T04:30:42.282Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/core/config/load-config.ts": {
+      "path": "src/core/config/load-config.ts",
+      "createdAt": "2026-04-25T04:30:42.283Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/core/config/load-shared-config.ts": {
+      "path": "src/core/config/load-shared-config.ts",
+      "createdAt": "2026-04-25T04:30:42.285Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/core/config/config-store.ts": {
+      "path": "src/core/config/config-store.ts",
+      "createdAt": "2026-04-25T04:30:42.286Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/core/config/laravel-config.types.ts": {
+      "path": "src/core/config/laravel-config.types.ts",
+      "createdAt": "2026-04-25T04:30:42.287Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/core/stubs/resolve-stub.ts": {
+      "path": "src/core/stubs/resolve-stub.ts",
+      "createdAt": "2026-04-25T04:30:42.289Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/core/stubs/format-stub.ts": {
+      "path": "src/core/stubs/format-stub.ts",
+      "createdAt": "2026-04-25T04:30:42.290Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/core/stubs/get-stub-path.ts": {
+      "path": "src/core/stubs/get-stub-path.ts",
+      "createdAt": "2026-04-25T04:30:42.292Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/core/stubs/stub-config.types.ts": {
+      "path": "src/core/stubs/stub-config.types.ts",
+      "createdAt": "2026-04-25T04:30:42.294Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/core/writer/backup-path.ts": {
+      "path": "src/core/writer/backup-path.ts",
+      "createdAt": "2026-04-25T04:30:42.295Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/core/writer/write-with-merge.ts": {
+      "path": "src/core/writer/write-with-merge.ts",
+      "createdAt": "2026-04-25T04:30:42.296Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/core/formatting/pretty.ts": {
+      "path": "src/core/formatting/pretty.ts",
+      "createdAt": "2026-04-25T04:30:42.298Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/generators/migrations/index.ts": {
+      "path": "src/generators/migrations/index.ts",
+      "createdAt": "2026-04-25T04:30:42.300Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/generators/migrations/generator.ts": {
+      "path": "src/generators/migrations/generator.ts",
+      "createdAt": "2026-04-25T04:30:42.301Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/generators/migrations/migration.types.ts": {
+      "path": "src/generators/migrations/migration.types.ts",
+      "createdAt": "2026-04-25T04:30:42.302Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/generators/migrations/definitions/column-definition.ts": {
+      "path": "src/generators/migrations/definitions/column-definition.ts",
+      "createdAt": "2026-04-25T04:30:42.304Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/generators/migrations/definitions/model-definition.ts": {
+      "path": "src/generators/migrations/definitions/model-definition.ts",
+      "createdAt": "2026-04-25T04:30:42.305Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/generators/migrations/definitions/column-definition.types.ts": {
+      "path": "src/generators/migrations/definitions/column-definition.types.ts",
+      "createdAt": "2026-04-25T04:30:42.306Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/generators/migrations/rules/actions-map.ts": {
+      "path": "src/generators/migrations/rules/actions-map.ts",
+      "createdAt": "2026-04-25T04:30:42.309Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/generators/migrations/rules/column-maps.ts": {
+      "path": "src/generators/migrations/rules/column-maps.ts",
+      "createdAt": "2026-04-25T04:30:42.311Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/generators/migrations/rules/rule-definition.ts": {
+      "path": "src/generators/migrations/rules/rule-definition.ts",
+      "createdAt": "2026-04-25T04:30:42.312Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/generators/migrations/rules/rules.ts": {
+      "path": "src/generators/migrations/rules/rules.ts",
+      "createdAt": "2026-04-25T04:30:42.313Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/generators/migrations/printer/migration-printer.ts": {
+      "path": "src/generators/migrations/printer/migration-printer.ts",
+      "createdAt": "2026-04-25T04:30:42.315Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/generators/models/index.ts": {
+      "path": "src/generators/models/index.ts",
+      "createdAt": "2026-04-25T04:30:42.316Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/generators/models/generator.ts": {
+      "path": "src/generators/models/generator.ts",
+      "createdAt": "2026-04-25T04:30:42.318Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/generators/models/model.types.ts": {
+      "path": "src/generators/models/model.types.ts",
+      "createdAt": "2026-04-25T04:30:42.319Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/generators/models/relations/index.ts": {
+      "path": "src/generators/models/relations/index.ts",
+      "createdAt": "2026-04-25T04:30:42.321Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/generators/models/relations/morph.ts": {
+      "path": "src/generators/models/relations/morph.ts",
+      "createdAt": "2026-04-25T04:30:42.323Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/generators/models/relations/template-builder.ts": {
+      "path": "src/generators/models/relations/template-builder.ts",
+      "createdAt": "2026-04-25T04:30:42.324Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/generators/models/relations/relation.types.ts": {
+      "path": "src/generators/models/relations/relation.types.ts",
+      "createdAt": "2026-04-25T04:30:42.325Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/generators/models/printer/model-printer.ts": {
+      "path": "src/generators/models/printer/model-printer.ts",
+      "createdAt": "2026-04-25T04:30:42.327Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/generators/typescript/index.ts": {
+      "path": "src/generators/typescript/index.ts",
+      "createdAt": "2026-04-25T04:30:42.329Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/generators/typescript/generator.ts": {
+      "path": "src/generators/typescript/generator.ts",
+      "createdAt": "2026-04-25T04:30:42.330Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/generators/typescript/directives.ts": {
+      "path": "src/generators/typescript/directives.ts",
+      "createdAt": "2026-04-25T04:30:42.331Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/generators/typescript/typescript.types.ts": {
+      "path": "src/generators/typescript/typescript.types.ts",
+      "createdAt": "2026-04-25T04:30:42.332Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/generators/typescript/printer/typescript-printer.ts": {
+      "path": "src/generators/typescript/printer/typescript-printer.ts",
+      "createdAt": "2026-04-25T04:30:42.334Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/shared/build/build-model-content.ts": {
+      "path": "src/shared/build/build-model-content.ts",
+      "createdAt": "2026-04-25T04:30:42.336Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/shared/clean/clean-generated.ts": {
+      "path": "src/shared/clean/clean-generated.ts",
+      "createdAt": "2026-04-25T04:30:42.338Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/shared/sorting/sort-migrations.ts": {
+      "path": "src/shared/sorting/sort-migrations.ts",
+      "createdAt": "2026-04-25T04:30:42.339Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/shared/naming/decorate.ts": {
+      "path": "src/shared/naming/decorate.ts",
+      "createdAt": "2026-04-25T04:30:42.341Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/shared/directives/parse-directives.ts": {
+      "path": "src/shared/directives/parse-directives.ts",
+      "createdAt": "2026-04-25T04:30:42.343Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/shared/utils/strings.ts": {
+      "path": "src/shared/utils/strings.ts",
+      "createdAt": "2026-04-25T04:30:42.346Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/shared/utils/arrays.ts": {
+      "path": "src/shared/utils/arrays.ts",
+      "createdAt": "2026-04-25T04:30:42.347Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/shared/utils/paths.ts": {
+      "path": "src/shared/utils/paths.ts",
+      "createdAt": "2026-04-25T04:30:42.349Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "src/index.ts": {
+      "path": "src/index.ts",
+      "createdAt": "2026-04-25T04:30:42.351Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "types/global.d.ts": {
+      "path": "types/global.d.ts",
+      "createdAt": "2026-04-25T04:30:42.354Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    },
+    "tsup.config.ts": {
+      "path": "tsup.config.ts",
+      "createdAt": "2026-04-25T04:49:30.791Z",
+      "sizeAtCreate": 0,
+      "groupName": "default",
+      "groupRoot": "."
+    }
+  }
+}
