@@ -318,7 +318,7 @@ export class PrismaToTypesGenerator {
             appends,
             imports,
             // strip directives from doc so TS header comment stays clean
-            doc: stripDirectives(model.documentation),
+            doc: stripDirectives(model.documentation)!,
         };
     }
 
