@@ -1,62 +1,65 @@
-import { RelationDefinition } from "@/generators/models/relations/relation.types";
+import {RelationDefinition} from "@/generators/models/relations/relation.types";
+import {ParsedCustomDirectiveMap} from "@/shared/directives/custom-directive.types";
 
 /** Reuse these from your model‐generator file */
 export interface EnumDefinition {
-   name: string;
-   values: string[];
-   namespace: string; // for imported types
+    name: string;
+    values: string[];
+    namespace: string; // for imported types
 }
 
 export interface PropertyDefinition {
-   name: string;
-   phpType: string;
-   type: string;
-   fillable: boolean;
-   hidden: boolean;
-   ignore: boolean;
-   optional: boolean;
-   cast?: string;
-   enumRef?: string;
-   isList: boolean;
-   guarded?: boolean;
-   relation?: RelationDefinition;
-   typeAnnotation?: {
-      import?: string;
-      type: string;
-   };
+    name: string;
+    phpType: string;
+    type: string;
+    fillable: boolean;
+    hidden: boolean;
+    ignore: boolean;
+    optional: boolean;
+    cast?: string;
+    enumRef?: string;
+    isList: boolean;
+    guarded?: boolean;
+    relation?: RelationDefinition;
+    directives?: ParsedCustomDirectiveMap;
+    typeAnnotation?: {
+        import?: string;
+        type: string;
+    };
 }
 
 export interface ModelDefinition {
-   isIgnored: boolean;
-   /* Core identity */
-   className: string;
-   tableName: string;
+    isIgnored: boolean;
+    /* Core identity */
+    className: string;
+    tableName: string;
 
-   /* Columns & relations */
-   properties: PropertyDefinition[];
-   relations: RelationDefinition[];
+    /* Columns & relations */
+    properties: PropertyDefinition[];
+    relations: RelationDefinition[];
 
-   /* Enum metadata referenced by fields */
-   enums: EnumDefinition[];
+    /* Enum metadata referenced by fields */
+    enums: EnumDefinition[];
 
-   /* Type-hint interfaces for fumeapp/modeltyper, etc. */
-   interfaces: Record<string, { import?: string; type: string }>;
+    /* Type-hint interfaces for fumeapp/modeltyper, etc. */
+    interfaces: Record<string, { import?: string; type: string }>;
 
-   /* Mass-assignment & eager-loading */
-   guarded?: string[];    //  $guarded
-   with?: string[];    //  $with
+    /* Mass-assignment & eager-loading */
+    guarded?: string[];    //  $guarded
+    with?: string[];    //  $with
 
-   /* Generated PHP imports (filled by printer) */
-   imports?: string[];
+    /* Generated PHP imports (filled by printer) */
+    imports?: string[];
 
-   /* ── NEW model-level helpers ─────────────────────── */
-   extends?: string
-   traits?: string[];                           // use TraitA, TraitB
-   implements?: string[];// implements Interface as Alias
-   observer?: string;                             // boot() -> observe(...)
-   factory?: string;                             // static $factory = FooFactory::class
-   touches?: string[];                           // protected $touches = [...]
-   appends?: string[];                           // protected $appends = [...]
-   docblockProps?: string[];
-   namespace: string;                            // namespace App\Models;
+    /* ── NEW model-level helpers ─────────────────────── */
+    extends?: string
+    traits?: string[];                           // use TraitA, TraitB
+    implements?: string[];// implements Interface as Alias
+    observer?: string;                             // boot() -> observe(...)
+    factory?: string;                             // static $factory = FooFactory::class
+    touches?: string[];                           // protected $touches = [...]
+    appends?: string[];                           // protected $appends = [...]
+    docblockProps?: string[];
+    namespace: string;                            // namespace App\Models;
+    directives?: ParsedCustomDirectiveMap;
 }

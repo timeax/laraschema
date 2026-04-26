@@ -1,6 +1,7 @@
 import {DMMF} from "@prisma/generator-helper";
 import { decorate } from "@/shared/naming/decorate";
 import { getConfig } from "@/core/config/config-store";
+import {ParsedCustomDirectiveMap} from "@/shared/directives/custom-directive.types";
 /* ----------------------------- Public types ------------------------------ */
 
 export type RelationKind =
@@ -53,6 +54,7 @@ export interface RelationDefinition {
 
     /** Optional raw chain to append, e.g. "latest()->where('active',1)" */
     rawChain?: string;
+    directives?: ParsedCustomDirectiveMap;
 }
 
 export type HasManyKeys = {

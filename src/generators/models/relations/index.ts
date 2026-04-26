@@ -14,6 +14,8 @@ import {
 } from "./relation.types";
 import {detectMorphToRelations, parseMorphOwnerDirectives} from "./morph";
 import {isForModel, listFrom, parseLocalDirective} from '@/shared/directives/parse-directives';
+import {getConfig} from "@/core/config/config-store";
+import {parseCustomDirectives} from "@/shared/directives/parse-custom-directives";
 /* ------------------ pivot relevance (explicit M:N) ----------------------- */
 const pivotOtherEndpointFor = (
     thisModelName: string,
@@ -180,6 +182,14 @@ export function buildRelationsForModel(
     model: DMMF.Model
 ): RelationDefinition[] {
     const defs: RelationDefinition[] = [];
+    const customDirectives = getConfig('model', 'directives');
+
+    const relationDirectives = (field: DMMF.Field) =>
+        parseCustomDirectives(
+            field.documentation,
+            customDirectives,
+            'relation',
+        );
 
     // object relations (belongsTo / hasOne / hasMany / belongsToMany)
     for (const f of model.fields) {
@@ -198,6 +208,7 @@ export function buildRelationsForModel(
                     foreignKey: keys.foreign,
                     localKey: keys.local,
                     targetModelName: keys.target,
+                    directives: relationDirectives(f),
                 });
             } else if (keys.kind === "belongsToMany" && keys.mode === "explicit") {
                 const chainParts: string[] = [];
@@ -235,6 +246,7 @@ export function buildRelationsForModel(
                     foreignKey: keys.foreign,
                     targetModelName: keys.target,
                     rawChain,
+                    directives: relationDirectives(f),
                 });
             } else if (keys.kind === "belongsToMany" && keys.mode === "implicit") {
                 defs.push({
@@ -246,6 +258,7 @@ export function buildRelationsForModel(
                     localKey: keys.local,
                     foreignKey: keys.foreign,
                     targetModelName: keys.target,
+                    directives: relationDirectives(f),
                 });
             }
 
@@ -272,6 +285,7 @@ export function buildRelationsForModel(
                 foreignKey: f.relationFromFields ?? [],
                 localKey: f.relationToFields ?? [],
                 targetModelName: f.type,
+                directives: relationDirectives(f),
             });
             continue;
         }
@@ -289,6 +303,7 @@ export function buildRelationsForModel(
                 foreignKey: counterpart!.relationFromFields ?? [],
                 localKey: counterpart!.relationToFields ?? [],
                 targetModelName: f.type,
+                directives: relationDirectives(f),
             });
             continue;
         }
@@ -301,6 +316,7 @@ export function buildRelationsForModel(
                 foreignKey: counterpart!.relationFromFields ?? [],
                 localKey: counterpart!.relationToFields ?? [],
                 targetModelName: f.type,
+                directives: relationDirectives(f),
             });
         }
     }

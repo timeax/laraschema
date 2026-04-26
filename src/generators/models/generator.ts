@@ -3,9 +3,10 @@ import {EnumDefinition, ModelDefinition, PropertyDefinition,} from "./model.type
 import {PrismaTypes} from "@/generators/migrations/rules/column-maps.js";
 import {RelationDefinition} from "@/generators/models/relations/relation.types";
 import {buildRelationsForModel} from "@/generators/models/relations/index.js";
-import { getConfig } from "@/core/config/config-store";
-import { isForModel, listFrom, parseSilentDirective } from "@/shared/directives/parse-directives";
+import {getConfig} from "@/core/config/config-store";
+import {isForModel, listFrom, parseSilentDirective} from "@/shared/directives/parse-directives";
 import {parseAppendsDirective} from "@/generators/typescript/directives";
+import {parseCustomDirectives} from '@/shared/directives/parse-custom-directives';
 
 /**
  * Build ModelDefinition[] + EnumDefinition[] from your DMMF.
@@ -31,6 +32,14 @@ export class PrismaToLaravelModelGenerator {
 
         // 2) Build each ModelDefinition
         const models: ModelDefinition[] = this.dmmf.datamodel.models.map(model => {
+            const customDirectives = getConfig('model', 'directives');
+
+            const modelDirectives = parseCustomDirectives(
+                model.documentation,
+                customDirectives,
+                'model',
+            );
+
             /* ── 2.1  Model-level directives ──────────────────────────────── */
             const modelDoc = model.documentation ?? "";
 
@@ -103,7 +112,12 @@ export class PrismaToLaravelModelGenerator {
                     enumRef: enumMeta?.name,
                     typeAnnotation,
                     type: field.type,
-                    raw: field
+                    raw: field,
+                    directives: parseCustomDirectives(
+                        field.documentation,
+                        customDirectives,
+                        field.kind === 'object' ? 'relation' : 'field',
+                    ),
                 };
             });
 
@@ -226,6 +240,7 @@ export class PrismaToLaravelModelGenerator {
                 isIgnored: isForModel(parseSilentDirective(modelDoc)),
                 extends: parentClass !== 'Model' ? parentClass : undefined,
                 docblockProps,
+                directives: modelDirectives
             };
         });
 

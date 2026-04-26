@@ -1,5 +1,9 @@
 import { DefaultMaps, Rule } from "@/generators/migrations/rules/rules";
-
+import type {
+   CustomDirectiveRegistry,
+   ParsedCustomDirectiveMap,
+} from '@/shared/directives/custom-directive.types';
+import {ModelerHook} from "@/generators/models/hooks.types";
 /* ------------------------------------------------------------
  *  Re-usable stub-group description
  * ---------------------------------------------------------- */
@@ -267,4 +271,16 @@ export interface ModelConfigOverride extends LaravelGeneratorConfig {
 
    modelNamespace?: string;
    enumNamespace?: string;
+   /**
+    * Custom Prisma comment directives parsed during model generation.
+    *
+    * These do not replace built-in LaraSchema directives. They run beside them
+    * and can later be consumed by hooks or side-output generators.
+    */
+   directives?: CustomDirectiveRegistry;
+   hooks?: Array<string | ModelerHook>;
+}
+
+export interface HasCustomDirectives {
+   directives?: ParsedCustomDirectiveMap;
 }

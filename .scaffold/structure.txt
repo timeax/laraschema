@@ -81,6 +81,8 @@ src/
       index.ts
       generator.ts
       model.types.ts
+      hooks.types.ts
+      run-hooks.ts
 
       relations/
         index.ts
@@ -115,6 +117,9 @@ src/
 
     directives/
       parse-directives.ts
+      custom-directive.types.ts
+      parse-custom-directives.ts
+      strip-custom-directives.ts
 
     utils/
       strings.ts
