@@ -502,26 +502,15 @@ test("@abstract models are Laravel-silent bases and @inherits copies scalar fiel
 
 test("model namespace config controls generated PHP namespaces and enum imports", async () => {
   const { generateLaravelModels } = await import(distIndexUrl);
-  const root = await mkdtemp(path.join(tmpdir(), "laraschema-namespace-"));
-  const prismaDir = path.join(root, "prisma");
-  const schemaPath = path.join(prismaDir, "schema.prisma");
-  const configPath = path.join(prismaDir, "laraschema.config.js");
+  const runCase = async (configSource) => {
+    const root = await mkdtemp(path.join(tmpdir(), "laraschema-namespace-"));
+    const prismaDir = path.join(root, "prisma");
+    const schemaPath = path.join(prismaDir, "schema.prisma");
+    const configPath = path.join(prismaDir, "laraschema.config.js");
 
-  try {
     await mkdir(prismaDir, { recursive: true });
     await writeFile(schemaPath, "// test schema\n", "utf8");
-    await writeFile(
-      configPath,
-      `module.exports = {
-  rootDir: ${JSON.stringify(root)},
-  modeler: {
-    namespace: "Domain\\\\Shared",
-    modelNamespace: "Domain\\\\Billing",
-    enumNamespace: "Domain\\\\BillingEnums",
-  },
-};`,
-      "utf8",
-    );
+    await writeFile(configPath, configSource(root), "utf8");
 
     const result = await generateLaravelModels({
       dmmf: buildNamespacedDmmf(),
@@ -539,21 +528,58 @@ test("model namespace config controls generated PHP namespaces and enum imports"
       version: "",
     });
 
-    const account = result.models.find((model) => model.className === "Account");
-    const status = result.enums.find((enumDef) => enumDef.name === "AccountStatus");
-
-    assert.equal(account?.namespace, "Domain\\Billing");
-    assert.equal(status?.namespace, "Domain\\BillingEnums");
-
     const modelPhp = await readFile(path.join(root, "app", "Models", "Account.php"), "utf8");
     const enumPhp = await readFile(path.join(root, "app", "Enums", "AccountStatus.php"), "utf8");
 
-    assert.match(modelPhp, /namespace Domain\\Billing\\Models;/);
-    assert.match(modelPhp, /use Domain\\BillingEnums\\Enums\\AccountStatus;/);
-    assert.match(modelPhp, /'status' => AccountStatus::class/);
-    assert.match(enumPhp, /namespace Domain\\BillingEnums\\Enums;/);
+    return { root, result, modelPhp, enumPhp };
+  };
+
+  const globalCase = await runCase((root) => `module.exports = {
+  rootDir: ${JSON.stringify(root)},
+  modeler: {
+    namespace: "Domain\\\\Shared",
+  },
+};`);
+
+  try {
+    const account = globalCase.result.models.find((model) => model.className === "Account");
+    const status = globalCase.result.enums.find((enumDef) => enumDef.name === "AccountStatus");
+
+    assert.equal(account?.namespace, "Domain\\Shared\\Models");
+    assert.equal(status?.namespace, "Domain\\Shared\\Enums");
+    assert.match(globalCase.modelPhp, /namespace Domain\\Shared\\Models;/);
+    assert.match(globalCase.modelPhp, /use Domain\\Shared\\Enums\\AccountStatus;/);
+    assert.match(globalCase.enumPhp, /namespace Domain\\Shared\\Enums;/);
   } finally {
-    await rm(root, { recursive: true, force: true });
+    await rm(globalCase.root, { recursive: true, force: true });
+  }
+
+  const specificCase = await runCase((root) => `module.exports = {
+  rootDir: ${JSON.stringify(root)},
+  modeler: {
+    namespace: "Domain\\\\Shared",
+    modelNamespace: "Domain\\\\Billing\\\\Models",
+    enumNamespace: "Domain\\\\Billing\\\\Enums",
+  },
+};`,
+  );
+
+  try {
+    const account = specificCase.result.models.find((model) => model.className === "Account");
+    const status = specificCase.result.enums.find((enumDef) => enumDef.name === "AccountStatus");
+
+    assert.equal(account?.namespace, "Domain\\Billing\\Models");
+    assert.equal(status?.namespace, "Domain\\Billing\\Enums");
+
+    assert.match(specificCase.modelPhp, /namespace Domain\\Billing\\Models;/);
+    assert.match(specificCase.modelPhp, /use Domain\\Billing\\Enums\\AccountStatus;/);
+    assert.match(specificCase.modelPhp, /'status' => AccountStatus::class/);
+    assert.match(specificCase.enumPhp, /namespace Domain\\Billing\\Enums;/);
+    assert.doesNotMatch(specificCase.modelPhp, /Models\\Models/);
+    assert.doesNotMatch(specificCase.modelPhp, /Enums\\Enums/);
+    assert.doesNotMatch(specificCase.enumPhp, /Enums\\Enums/);
+  } finally {
+    await rm(specificCase.root, { recursive: true, force: true });
   }
 });
 
