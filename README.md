@@ -181,12 +181,6 @@ Creates per-table, per-model, per-enum, or per-TypeScript stub files from the ma
 
 ```bash
 laraschema customize -t migration,model -n users,accounts
-
-Create update migration stub overrides:
-
-```bash
-laraschema customize -t migration -n users,accounts --update
-```
 ```
 
 Create a PHP enum stub override:
@@ -605,15 +599,6 @@ For a generated item, LaraSchema resolves stubs in this order:
 
 3. Default stub
    stubs/<type>/index.stub
-
-For update-mode migrations (`@update`), the resolver uses:
-
-```txt
-1. stubs/migration/<table>.update.stub
-2. stubs/migration/<table>.stub
-3. stubs/migration/index.update.stub
-4. stubs/migration/index.stub
-```
 ```
 
 Examples:
@@ -629,12 +614,9 @@ prisma/stubs/ts/User.stub
 
 ```bash
 laraschema customize -t migration -n users
-laraschema customize -t migration -n users --update
 laraschema customize -t model -n User
 laraschema customize -t enum -n UserStatus
 laraschema customize -t ts -n User
-
-`--update` is migration-only and creates `*.update.stub` files.
 ```
 
 ---
@@ -1317,16 +1299,16 @@ model User {
 
 ### Syntax groups
 
-| Syntax group          | Directives                                                                                                     | Supported forms                                                                          |
-| --------------------- | -------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| Boolean flags         | `@fillable`, `@hidden`, `@guarded`, `@with`, `@pivot`, `@withTimestamps`                                       | Plain presence, for example `/// @fillable`.                                             |
+| Syntax group          | Directives                                                                                                                | Supported forms                                                                          |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Boolean flags         | `@fillable`, `@hidden`, `@guarded`, `@with`, `@pivot`, `@withTimestamps`                                                  | Plain presence, for example `/// @fillable`.                                             |
 | Flexible lists        | `@fillable`, `@hidden`, `@guarded`, `@with`, `@touch`, `@pivot`, `@pivotAlias`, `@entity`, `@local`, `@silent`, `@update` | `@tag{a,b}`, `@tag(a,b)`, `@tag: a,b`.                                                   |
-| Appended attributes   | `@appends`                                                                                                     | `@appends{a,b}`, `@appends(a,b)`, `@appends: a,b`; entries may be `name` or `name:type`. |
-| Structured field type | `@type`                                                                                                        | Brace object syntax only: `@type{ import:'...', type:'...' }`.                           |
-| Field cast            | `@cast`                                                                                                        | Brace syntax only: `@cast{datetime}` or `@cast{decimal:2}`.                              |
-| Class references      | `@trait`, `@use`, `@implements`, `@observer`, `@factory`, `@extend`                                            | Colon syntax only: `@trait:Foo\Bar`, optionally `as Alias` where supported.              |
-| Class modifiers       | `@abstract`                                                                                                     | Plain presence, for example `/// @abstract`.                                              |
-| Morph relations       | `@morph`                                                                                                       | Parentheses syntax: `@morph(name: commentable, type: many, model: Comment)`.             |
+| Appended attributes   | `@appends`                                                                                                                | `@appends{a,b}`, `@appends(a,b)`, `@appends: a,b`; entries may be `name` or `name:type`. |
+| Structured field type | `@type`                                                                                                                   | Brace object syntax only: `@type{ import:'...', type:'...' }`.                           |
+| Field cast            | `@cast`                                                                                                                   | Brace syntax only: `@cast{datetime}` or `@cast{decimal:2}`.                              |
+| Class references      | `@trait`, `@use`, `@implements`, `@observer`, `@factory`, `@extend`                                                       | Colon syntax only: `@trait:Foo\Bar`, optionally `as Alias` where supported.              |
+| Class modifiers       | `@abstract`                                                                                                               | Plain presence, for example `/// @abstract`.                                             |
+| Morph relations       | `@morph`                                                                                                                  | Parentheses syntax: `@morph(name: commentable, type: many, model: Comment)`.             |
 
 ### Directive summary
 
@@ -1442,7 +1424,7 @@ Where supported, `as Alias` controls the imported short name used in the generat
 <details>
 <summary>`@update`</summary>
 
-Use `@update` on a model to switch migration naming mode from:
+Use `@update` on a migration descriptor model to emit an update migration instead of a create migration:
 
 ```txt
 *_create_<table>_table.php
@@ -1454,19 +1436,23 @@ to:
 *_update_<table>_table.php
 ```
 
+Bare `@update` updates the descriptor model's own mapped table.
+
+Targeted `@update(...)` keeps the descriptor model as the migration filename owner, but passes the target model/table to `Schema::table(...)`.
+
 Target forms:
 
 ```prisma
 /// @update
-/// @update(User,accounts)
-/// @update{User,accounts}
-/// @update: User,accounts
-model User {
+/// @update(rounds)
+/// @update{Round}
+/// @update: rounds
+model UpdateRounds {
   id Int @id @default(autoincrement())
 }
 ```
 
-Targets may be model names or resolved table names (`dbName`).
+Targets may be model names or resolved table names (`dbName`). Descriptor models are migration-only and are not emitted as PHP models or TypeScript declarations.
 
 </details>
 

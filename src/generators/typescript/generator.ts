@@ -25,9 +25,9 @@ export class PrismaToTypesGenerator {
     }
 
     generateAll(): { models: TsModelDefinition[]; enums: TsEnumDefinition[] } {
-        const models = this.dmmf.datamodel.models.map((model) =>
-            this.buildModelDefinition(model)
-        );
+        const models = this.dmmf.datamodel.models
+            .filter((model) => !this.isUpdateDescriptor(model))
+            .map((model) => this.buildModelDefinition(model));
 
         const enums = this.dmmf.datamodel.enums.map(
             (e): TsEnumDefinition => ({
@@ -38,6 +38,10 @@ export class PrismaToTypesGenerator {
         );
 
         return {models, enums};
+    }
+
+    private isUpdateDescriptor(model: DMMF.Model): boolean {
+        return /@update(?![\w])/i.test(model.documentation ?? "");
     }
 
     /**

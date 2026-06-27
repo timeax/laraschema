@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { tmpdir } from "node:os";
-import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { spawnSync } from "node:child_process";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -73,7 +73,7 @@ test("model castMaps overrides built-ins and preserves @cast directives", async 
   const root = await mkdtemp(path.join(tmpdir(), "laraschema-castmaps-"));
   const prismaDir = path.join(root, "prisma");
   const schemaPath = path.join(prismaDir, "schema.prisma");
-  const configPath = path.join(prismaDir, "prisma-laravel.config.js");
+  const configPath = path.join(prismaDir, "laraschema.config.js");
 
   try {
     await mkdir(prismaDir, { recursive: true });
@@ -137,6 +137,69 @@ test("model castMaps overrides built-ins and preserves @cast directives", async 
     assert.match(content, /'big_items' => AsCollection::class/);
     assert.match(content, /'created_at' => 'datetime'/);
     assert.match(content, /'forced' => 'encrypted:array'/);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("modeler hooks receive generated definitions and active config", async () => {
+  const { generateLaravelModels } = await import(distIndexUrl);
+  const root = await mkdtemp(path.join(tmpdir(), "laraschema-hooks-"));
+  const prismaDir = path.join(root, "prisma");
+  const schemaPath = path.join(prismaDir, "schema.prisma");
+  const configPath = path.join(prismaDir, "laraschema.config.js");
+  const hookPath = path.join(prismaDir, "modeler-hook.cjs");
+  const hookOutput = path.join(root, "hook-output.json");
+
+  try {
+    await mkdir(prismaDir, { recursive: true });
+    await writeFile(schemaPath, "// test schema\n", "utf8");
+    await writeFile(
+      hookPath,
+      `module.exports = async function hook(ctx) {
+  await ctx.writeJson(${JSON.stringify(hookOutput)}, {
+    models: ctx.models.map((model) => model.className),
+    enums: ctx.enums.map((item) => item.name),
+    noEmit: ctx.config.noEmit,
+    rootDir: ctx.config.rootDir,
+  });
+};`,
+      "utf8",
+    );
+    await writeFile(
+      configPath,
+      `module.exports = {
+  rootDir: ${JSON.stringify(root)},
+  modeler: {
+    hooks: [${JSON.stringify(hookPath)}],
+  },
+};`,
+      "utf8",
+    );
+
+    await generateLaravelModels({
+      dmmf: buildDmmf(),
+      generator: {
+        config: {
+          noEmit: true,
+          outputDir: "app/Models",
+          outputEnumDir: "app/Enums",
+        },
+        sourceFilePath: schemaPath,
+      },
+      otherGenerators: [],
+      schemaPath,
+      datasources: [],
+      datamodel: "",
+      version: "",
+    });
+
+    const hookPayload = JSON.parse(await readFile(hookOutput, "utf8"));
+
+    assert.deepEqual(hookPayload.models, ["Sample"]);
+    assert.deepEqual(hookPayload.enums, []);
+    assert.equal(hookPayload.noEmit, true);
+    assert.equal(hookPayload.rootDir, root);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

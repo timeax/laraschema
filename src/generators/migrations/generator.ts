@@ -21,6 +21,8 @@ export interface Migration {
     /** Marks this entire model as ignored */
     local?: boolean;
     mode?: 'create' | 'update';
+    /** Table updated by an update descriptor; defaults to tableName. */
+    targetTableName?: string;
 }
 
 export class PrismaToLaravelMigrationGenerator {
@@ -76,13 +78,17 @@ export class PrismaToLaravelMigrationGenerator {
     private resolveModel(
         model: DMMF.Model,
         indexMap: Map<string, DMMF.Index[]>,
-        updateTargets: Set<string>,
     ): Migration {
         const tableName = model.dbName ?? model.name;
         const definitions = this.columnGen.getColumns(tableName);
         const columns = this.resolveColumns(definitions);
         const utilities = this.buildTableUtilities(indexMap.get(model.name) ?? []);
         const isSilent = isForMigrator(parseSilentDirective(model.documentation ?? ""));
+        const updateTargets = parseUpdateDirective(model.documentation ?? "");
+        const isUpdate = /@update(?![\w])/i.test(model.documentation ?? "");
+        const targetTableName = updateTargets.length
+            ? this.resolveUpdateTarget(updateTargets[0])
+            : undefined;
 
         return {
             tableName,
@@ -91,8 +97,18 @@ export class PrismaToLaravelMigrationGenerator {
             local: isSilent,
             definitions,
             statements: [...columns, ...utilities],
-            mode: updateTargets.has(model.name) || updateTargets.has(tableName) ? 'update' : 'create',
+            mode: isUpdate ? 'update' : 'create',
+            targetTableName,
         };
+    }
+
+    private resolveUpdateTarget(target: string): string {
+        const value = target.trim();
+        const targetModel = this.dmmf.datamodel.models.find(
+            model => model.name === value || (model.dbName ?? model.name) === value,
+        );
+
+        return targetModel?.dbName ?? targetModel?.name ?? value;
     }
 
     /**
@@ -100,28 +116,7 @@ export class PrismaToLaravelMigrationGenerator {
      */
     public generateAll(): Migration[] {
         const indexMap = this.buildModelIndexMap();
-        const updateTargets = new Set<string>();
-        const names = new Set(this.dmmf.datamodel.models.map((m) => m.name));
-        const tables = new Set(this.dmmf.datamodel.models.map((m) => m.dbName ?? m.name));
-
-        for (const model of this.dmmf.datamodel.models) {
-            const targets = parseUpdateDirective(model.documentation ?? "");
-            if (targets.length === 0) {
-                if (/@update(?![\w])/i.test(model.documentation ?? "")) {
-                    updateTargets.add(model.name);
-                    updateTargets.add(model.dbName ?? model.name);
-                }
-                continue;
-            }
-
-            for (const target of targets.map((t) => t.trim()).filter(Boolean)) {
-                if (names.has(target) || tables.has(target)) {
-                    updateTargets.add(target);
-                }
-            }
-        }
-
-        return this.dmmf.datamodel.models.map(model => this.resolveModel(model, indexMap, updateTargets));
+        return this.dmmf.datamodel.models.map(model => this.resolveModel(model, indexMap));
     }
 
     /**

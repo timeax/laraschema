@@ -12,13 +12,13 @@ generator models {
   outputEnumDir = "./database/Enums"
   namespace     = "Timeax\\FortiPlugin"
   stubDir       = "prisma/stubs"
-  tablePrefix   = "scpl_"
+  // tablePrefix   = "scpl_"
 }
 
 generator migrations {
-  provider    = "laraschema-migrations"
-  outputDir   = "./database/migrations"
-  tablePrefix = "scpl_"
+  provider  = "laraschema-migrations"
+  outputDir = "./database/migrations"
+  // tablePrefix = "scpl_"
 }
 
 generator types {
@@ -41,6 +41,16 @@ model RoundResult {
 
   @@unique([round_id, speaker_member_id], map: "round_results_round_speaker_unique")
   @@map("round_results")
+}
+
+/// @update(rounds)
+model UpdateDirectiveProbe {
+  id         String   @id @default(uuid())
+  note       String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("update_directive_probes")
 }
 
 model Round {

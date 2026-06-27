@@ -79,7 +79,7 @@ export class StubMigrationPrinter {
          .join("\n");
 
       /* apply prefix/suffix when inserting into the stub */
-      const physicalTable = decorate(mig.tableName, this.cfg);
+      const physicalTable = decorate(mig.targetTableName ?? mig.tableName, this.cfg);
 
       const fullContent = this.tmplFn(
          physicalTable,

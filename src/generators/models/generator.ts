@@ -31,7 +31,9 @@ export class PrismaToLaravelModelGenerator {
         }));
 
         // 2) Build each ModelDefinition
-        const models: ModelDefinition[] = this.dmmf.datamodel.models.map(model => {
+        const models: ModelDefinition[] = this.dmmf.datamodel.models
+            .filter(model => !this.isUpdateDescriptor(model))
+            .map(model => {
             const customDirectives = getConfig('model', 'directives');
 
             const modelDirectives = parseCustomDirectives(
@@ -247,6 +249,10 @@ export class PrismaToLaravelModelGenerator {
         });
 
         return {models, enums};
+    }
+
+    private isUpdateDescriptor(model: DMMF.Model): boolean {
+        return /@update(?![\w])/i.test(model.documentation ?? "");
     }
 
     private mapPrismaToPhpType(

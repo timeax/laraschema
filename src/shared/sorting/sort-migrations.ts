@@ -81,10 +81,14 @@ export function sortMigrations(migrations: Migration[]): Migration[] {
       );
    }
 
+   const creates = sorted.filter(m => (m.mode ?? 'create') !== 'update');
+   const updates = sorted.filter(m => (m.mode ?? 'create') === 'update');
+   const ordered = [...creates, ...updates];
+
    console.log(
       '\n📦 Sorted Migration Tables:\n' +
-      sorted.map((item, i) => ` ${i + 1}. ${item.tableName}`).join('\n') +
+      ordered.map((item, i) => ` ${i + 1}. ${item.tableName}`).join('\n') +
       '\n'
    );
-   return sorted;
+   return ordered;
 }

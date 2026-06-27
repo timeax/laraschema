@@ -1,4 +1,3 @@
-// @ts-nocheck
 import {GeneratorConfig, GeneratorOptions} from "@prisma/generator-helper";
 import {existsSync, mkdirSync} from "fs";
 import path from "path";
@@ -73,9 +72,12 @@ export async function generateLaravelModels(options: GeneratorOptions) {
         namespace: pick("namespace", "App"),
         modelNamespace: pick("modelNamespace"),
         enumNamespace: pick("enumNamespace"),
+        hooks: pick("hooks"),
     };
 
-    addToConfig('model', {...cfg, rootDir: shared.rootDir});
+    const activeConfig = {...cfg, rootDir: shared.rootDir};
+
+    addToConfig('model', activeConfig);
 
     // 1) Determine and ensure output directories
     const modelsDir = cfg.outputDir
@@ -116,10 +118,10 @@ export async function generateLaravelModels(options: GeneratorOptions) {
     } = schemaGen.generateAll();
 
     // 3b) Run hooks
-    await runModelerHooks(config.hooks, {
+    await runModelerHooks(activeConfig.hooks, {
         models,
         enums,
-        config,
+        config: activeConfig,
     });
 
     // 4) Write enum files
