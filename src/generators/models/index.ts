@@ -141,7 +141,8 @@ export async function generateLaravelModels(options: GeneratorOptions) {
     // 5) Write model files
     for (const model of models) {
         if (model.isIgnored) continue;
-        let imports = model.properties.filter(item => item.enumRef).map(item => `use ${cfg.namespace ?? 'App'}\\Enums\\${item.enumRef};`);
+        const enumNamespace = cfg.enumNamespace ?? cfg.namespace ?? 'App';
+        let imports = model.properties.filter(item => item.enumRef).map(item => `use ${enumNamespace}\\Enums\\${item.enumRef};`);
         //----
         if (Array.isArray(model.imports)) model.imports.push(...imports);
         else model.imports = imports;

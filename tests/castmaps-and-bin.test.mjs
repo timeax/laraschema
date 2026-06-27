@@ -156,6 +156,46 @@ function buildInheritedDmmf() {
   };
 }
 
+function buildNamespacedDmmf() {
+  return {
+    datamodel: {
+      enums: [
+        {
+          name: "AccountStatus",
+          values: [{ name: "active" }, { name: "disabled" }],
+          documentation: null,
+        },
+      ],
+      models: [
+        {
+          name: "Account",
+          dbName: "accounts",
+          documentation: null,
+          fields: [
+            scalarField("id", "Int"),
+            {
+              ...scalarField("status", "AccountStatus"),
+              kind: "enum",
+            },
+          ],
+          primaryKey: null,
+          uniqueFields: [],
+          uniqueIndexes: [],
+        },
+      ],
+      types: [],
+      indexes: [],
+    },
+    schema: {
+      enumTypes: { prisma: [], model: [] },
+      inputObjectTypes: { prisma: [] },
+      outputObjectTypes: { prisma: [], model: [] },
+      fieldRefTypes: { prisma: [] },
+    },
+    mappings: { modelOperations: [], otherOperations: { read: [], write: [] } },
+  };
+}
+
 function relationField(name, type, relationName, extra = {}) {
   return {
     kind: "object",
@@ -455,6 +495,63 @@ test("@abstract models are Laravel-silent bases and @inherits copies scalar fiel
     assert.ok(customerType?.fields.some((field) => field.name === "created_at"));
 
     await assert.rejects(readFile(path.join(root, "app", "Models", "BaseRecord.php"), "utf8"));
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("model namespace config controls generated PHP namespaces and enum imports", async () => {
+  const { generateLaravelModels } = await import(distIndexUrl);
+  const root = await mkdtemp(path.join(tmpdir(), "laraschema-namespace-"));
+  const prismaDir = path.join(root, "prisma");
+  const schemaPath = path.join(prismaDir, "schema.prisma");
+  const configPath = path.join(prismaDir, "laraschema.config.js");
+
+  try {
+    await mkdir(prismaDir, { recursive: true });
+    await writeFile(schemaPath, "// test schema\n", "utf8");
+    await writeFile(
+      configPath,
+      `module.exports = {
+  rootDir: ${JSON.stringify(root)},
+  modeler: {
+    namespace: "Domain\\\\Shared",
+    modelNamespace: "Domain\\\\Billing",
+    enumNamespace: "Domain\\\\BillingEnums",
+  },
+};`,
+      "utf8",
+    );
+
+    const result = await generateLaravelModels({
+      dmmf: buildNamespacedDmmf(),
+      generator: {
+        config: {
+          outputDir: "app/Models",
+          outputEnumDir: "app/Enums",
+        },
+        sourceFilePath: schemaPath,
+      },
+      otherGenerators: [],
+      schemaPath,
+      datasources: [],
+      datamodel: "",
+      version: "",
+    });
+
+    const account = result.models.find((model) => model.className === "Account");
+    const status = result.enums.find((enumDef) => enumDef.name === "AccountStatus");
+
+    assert.equal(account?.namespace, "Domain\\Billing");
+    assert.equal(status?.namespace, "Domain\\BillingEnums");
+
+    const modelPhp = await readFile(path.join(root, "app", "Models", "Account.php"), "utf8");
+    const enumPhp = await readFile(path.join(root, "app", "Enums", "AccountStatus.php"), "utf8");
+
+    assert.match(modelPhp, /namespace Domain\\Billing\\Models;/);
+    assert.match(modelPhp, /use Domain\\BillingEnums\\Enums\\AccountStatus;/);
+    assert.match(modelPhp, /'status' => AccountStatus::class/);
+    assert.match(enumPhp, /namespace Domain\\BillingEnums\\Enums;/);
   } finally {
     await rm(root, { recursive: true, force: true });
   }
