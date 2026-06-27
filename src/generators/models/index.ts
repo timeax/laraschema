@@ -60,7 +60,6 @@ export async function generateLaravelModels(options: GeneratorOptions) {
         awobaz: pick("awobaz", false),
         stubDir: pick("stubDir")!,          // shared stubDir wins
         groups,
-        /* NEW global prefix/suffix made available downstream */
         /* NEW global table decoration */
         tablePrefix: pick('tablePrefix', ''),
         tableSuffix: pick('tableSuffix', ''),
@@ -72,6 +71,8 @@ export async function generateLaravelModels(options: GeneratorOptions) {
         namespace: pick("namespace", "App"),
         modelNamespace: pick("modelNamespace"),
         enumNamespace: pick("enumNamespace"),
+        namePrefix: pick("namePrefix", ""),
+        nameSuffix: pick("nameSuffix", ""),
         hooks: pick("hooks"),
     };
 

@@ -50,6 +50,8 @@ function hasModelSpecificTsStub(
     const key =
         (model as any).tableName && typeof (model as any).tableName === "string"
             ? (model as any).tableName
+            : (model as any).sourceName && typeof (model as any).sourceName === "string"
+                ? (model as any).sourceName
             : model.name;
 
     const stubConfig = {
@@ -249,11 +251,9 @@ export async function generateTypesFromPrisma(options: GeneratorOptions) {
         const model = specialModels[idx];
         if (!model) return;
 
-        const decoratedName = `${cfg.namePrefix ?? ""}${model.name}${cfg.nameSuffix ?? ""
-            }`;
         const filePath = path.join(
             tsOutDir,
-            `${decoratedName}${modelExt}`,
+            `${model.name}${modelExt}`,
         );
 
         await writeWithMerge(

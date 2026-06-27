@@ -83,6 +83,7 @@ export interface LaravelGeneratorConfig {
 
    /** Default namespace for local imports (PHP generators). */
    namespace?: "App\\";
+
 }
 
 /* ------------------------------------------------------------
@@ -250,6 +251,10 @@ export interface MigratorConfigOverride extends LaravelGeneratorConfig {
 }
 
 export interface ModelConfigOverride extends LaravelGeneratorConfig {
+   /** Optional prefix/suffix applied to generated PHP model class names. */
+   namePrefix?: string;
+   nameSuffix?: string;
+
    /** Optional explicit PHP model stub file path. */
    modelStubPath?: string;
    /** Optional explicit PHP enum stub file path. */

@@ -371,6 +371,8 @@ module.exports = {
     outputEnumDir: "app/Enums",
     prettier: true,
     overwriteExisting: true,
+    namePrefix: "",
+    nameSuffix: "",
 
     // Use awobaz/compoships-style relations for composite keys.
     awobaz: false,
@@ -404,6 +406,8 @@ module.exports = {
     shape: "interface",
     nullableAsOptional: false,
     readonlyArrays: false,
+    namePrefix: "",
+    nameSuffix: "",
     modelsFileName: "index",
     enumsFileName: "enums",
     scalarMap: {
@@ -501,6 +505,8 @@ export interface ModelConfigOverride {
   modelStubPath?: string;
   enumStubPath?: string;
   outputEnumDir?: string;
+  namePrefix?: string;
+  nameSuffix?: string;
   awobaz?: boolean;
   allowedPivotExtraFields?: string[];
   castMaps?: Record<string, CastMapValue>;
@@ -793,6 +799,7 @@ It supports:
 * `$guarded`
 * `$casts`
 * enum casts
+* model class name prefixing and suffixing
 * custom cast maps
 * custom model directives
 * modeler hooks
@@ -825,8 +832,12 @@ generator models {
   stubDir  = "./prisma/stubs"
   outputDir     = "app/Models"
   outputEnumDir = "app/Enums"
+  namePrefix    = "Ls"
+  nameSuffix    = "Record"
 }
 ```
+
+`namePrefix` and `nameSuffix` on the model generator affect generated PHP model class names and PHP relation targets only. TypeScript declarations use the separate TypeScript generator options.
 
 ### Explicit many-to-many pivot detection
 
@@ -1230,8 +1241,8 @@ Supported options:
 | `scalarMap`          | Override Prisma scalar to TS type mapping.                                                                     |
 | `nullableAsOptional` | Emit nullable fields as optional properties.                                                                   |
 | `readonlyArrays`     | Emit lists as `ReadonlyArray<T>`.                                                                              |
-| `namePrefix`         | Prefix generated model names.                                                                                  |
-| `nameSuffix`         | Suffix generated model names.                                                                                  |
+| `namePrefix`         | Prefix generated TypeScript model names.                                                                       |
+| `nameSuffix`         | Suffix generated TypeScript model names.                                                                       |
 | `moduleName`         | Optional module wrapper name.                                                                                  |
 | `modelsFileName`     | Base filename for the main model declaration bundle. Defaults to `index`, producing `index.d.ts`.              |
 | `enumsFileName`      | Base filename for the enum bundle. Defaults to `enums`, producing `enums.ts` or `enums.d.ts`.                  |
@@ -1322,7 +1333,7 @@ model User {
 | Structured field type | `@type`                                                                                                                   | Brace object syntax only: `@type{ import:'...', type:'...' }`.                           |
 | Field cast            | `@cast`                                                                                                                   | Brace syntax only: `@cast{datetime}` or `@cast{decimal:2}`.                              |
 | Class references      | `@trait`, `@use`, `@implements`, `@observer`, `@factory`, `@extend`                                                       | Colon syntax only: `@trait:Foo\Bar`, optionally `as Alias` where supported.              |
-| Class modifiers       | `@abstract`                                                                                                               | Plain presence, for example `/// @abstract`.                                             |
+| Schema inheritance    | `@abstract`, `@inherits`                                                                                                  | `@abstract` as a plain flag; `@inherits(BaseModel)` as a model reference.                 |
 | Morph relations       | `@morph`                                                                                                                  | Parentheses syntax: `@morph(name: commentable, type: many, model: Comment)`.             |
 
 ### Directive summary
@@ -1338,7 +1349,8 @@ model User {
 | `@trait:...`       | Model                        | Adds a trait import/use.                                                |
 | `@use:...`         | Model                        | Adds a raw import/use line.                                             |
 | `@extend:...`      | Model                        | Changes parent class.                                                   |
-| `@abstract`        | Model                        | Emits `abstract class ...` for the generated model.                     |
+| `@abstract`        | Model                        | Marks a schema-only base model; no PHP model or migration is emitted.   |
+| `@inherits(...)`   | Model                        | Copies scalar/enum fields from another Prisma model.                    |
 | `@implements:...`  | Model                        | Adds implemented interface.                                             |
 | `@observer:...`    | Model                        | Adds observer metadata.                                                 |
 | `@factory:...`     | Model                        | Adds factory metadata.                                                  |
@@ -1426,13 +1438,37 @@ Class/reference directives use colon syntax:
 /// @observer:App\\Observers\\UserObserver
 /// @factory:Database\\Factories\\UserFactory
 /// @extend:Illuminate\\Foundation\\Auth\\User as Authenticatable
-/// @abstract
 model User {
   id Int @id @default(autoincrement())
 }
 ```
 
 Where supported, `as Alias` controls the imported short name used in the generated model.
+
+</details>
+
+<details>
+<summary>`@abstract` and `@inherits`</summary>
+
+Use `@abstract` for reusable schema-only base models. Abstract models are parsed but do not emit Laravel model classes or migration files.
+
+Use `@inherits(BaseModel)` on a concrete model to copy scalar and enum fields from the base model:
+
+```prisma
+/// @abstract
+model BaseRecord {
+  id String @id @default(uuid())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+/// @inherits(BaseRecord)
+model Customer {
+  email String @unique
+}
+```
+
+`Customer` receives the inherited fields in migrations, PHP model metadata, and TypeScript declarations. Relations are not inherited.
 
 </details>
 

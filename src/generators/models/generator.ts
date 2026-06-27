@@ -7,13 +7,17 @@ import {getConfig} from "@/core/config/config-store";
 import {isForModel, listFrom, parseSilentDirective} from "@/shared/directives/parse-directives";
 import {parseAppendsDirective} from "@/generators/typescript/directives";
 import {parseCustomDirectives} from '@/shared/directives/parse-custom-directives';
+import { applyModelInheritance, isAbstractModel } from "@/shared/directives/model-inheritance";
 
 /**
  * Build ModelDefinition[] + EnumDefinition[] from your DMMF.
  */
 export class PrismaToLaravelModelGenerator {
-    constructor(private dmmf: DMMF.Document) {
+    constructor(dmmf: DMMF.Document) {
+        this.dmmf = applyModelInheritance(dmmf);
     }
+
+    private dmmf: DMMF.Document;
 
     public primitiveTypes: string[] = [PrismaTypes.BigInt, PrismaTypes.Int, PrismaTypes.String];
 
@@ -21,7 +25,14 @@ export class PrismaToLaravelModelGenerator {
         models: ModelDefinition[];
         enums: EnumDefinition[];
     } {
-        const {namespace: baseNamespace, modelNamespace, enumNamespace} = getConfig('model') ?? {};
+        const {
+            namespace: baseNamespace,
+            modelNamespace,
+            enumNamespace,
+            namePrefix = '',
+            nameSuffix = '',
+        } = getConfig('model') ?? {};
+        const decorateModelName = (name: string) => `${namePrefix}${name}${nameSuffix}`;
 
         // 1) Extract all Prisma enums into EnumDefinition[]
         const enums: EnumDefinition[] = this.dmmf.datamodel.enums.map((e) => ({
@@ -33,6 +44,7 @@ export class PrismaToLaravelModelGenerator {
         // 2) Build each ModelDefinition
         const models: ModelDefinition[] = this.dmmf.datamodel.models
             .filter(model => !this.isUpdateDescriptor(model))
+            .filter(model => !isAbstractModel(model))
             .map(model => {
             const customDirectives = getConfig('model', 'directives');
 
@@ -130,7 +142,14 @@ export class PrismaToLaravelModelGenerator {
                     : hasToken("guarded", modelDoc) ? [] : undefined;
 
             /* ── 2.4  Relations (unchanged except @ignore honoured) ────────── */
-            const relations = this.extractRelationsFromModel(model);
+            const relations = this.extractRelationsFromModel(model).map((relation) =>
+                relation.targetModelName
+                    ? {
+                        ...relation,
+                        modelClass: `${decorateModelName(relation.targetModelName)}::class`,
+                    }
+                    : relation,
+            );
 
             /* ── 2.5  Interfaces from @type annotations ────────────────────── */
             const interfaces: Record<string, { import?: string; type: string }> = {};
@@ -166,8 +185,6 @@ export class PrismaToLaravelModelGenerator {
             const extendRE = /@extend:([^\s]+)(?:\s+as\s+(\w+))?/;
             let parentClass = "Model";
             let parentUse: UseImport | undefined;
-            const isAbstract = /@abstract\b/i.test(modelDoc);
-
             const extMatch = extendRE.exec(modelDoc);
             if (extMatch) {
                 parentClass = shortName(extMatch[1], extMatch[2]);
@@ -224,7 +241,7 @@ export class PrismaToLaravelModelGenerator {
 
             /* ── 2.6  Final ModelDefinition ────────────────────────────────── */
             return {
-                className: model.name,
+                className: decorateModelName(model.name),
                 tableName: model.dbName ?? model.name,
                 guarded,
                 properties,
@@ -242,7 +259,6 @@ export class PrismaToLaravelModelGenerator {
                 imports,
                 isIgnored: isForModel(parseSilentDirective(modelDoc)),
                 extends: parentClass !== 'Model' ? parentClass : undefined,
-                abstract: isAbstract,
                 docblockProps,
                 directives: modelDirectives
             };

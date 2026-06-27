@@ -16,13 +16,17 @@ import {
 import { listFrom } from "@/shared/directives/parse-directives";
 import { stripDirectives } from "@/shared/clean/clean-generated";
 import {buildRelationsForModel} from "@/generators/models/relations";
+import { applyModelInheritance } from "@/shared/directives/model-inheritance";
 
 export class PrismaToTypesGenerator {
     constructor(
-        private readonly dmmf: DMMF.Document,
+        dmmf: DMMF.Document,
         private readonly cfg: TypesConfig
     ) {
+        this.dmmf = applyModelInheritance(dmmf);
     }
+
+    private readonly dmmf: DMMF.Document;
 
     generateAll(): { models: TsModelDefinition[]; enums: TsEnumDefinition[] } {
         const models = this.dmmf.datamodel.models
@@ -103,6 +107,8 @@ export class PrismaToTypesGenerator {
     private buildModelDefinition(model: DMMF.Model): TsModelDefinition {
         const importsMap = new Map<string, Set<string>>();
         const enumNames = new Set<string>(); // enums used by this model
+        const modelName = (name: string) =>
+            `${this.cfg.namePrefix ?? ""}${name}${this.cfg.nameSuffix ?? ""}`;
 
         const containsWith = (name: string) =>
             listFrom(model.documentation ?? "", "with").includes(name);
@@ -136,7 +142,7 @@ export class PrismaToTypesGenerator {
                 // morphTo can point to different models → untyped
                 tsType = "any";
             } else {
-                const target = rel.targetModelName ?? "any";
+                const target = rel.targetModelName ? modelName(rel.targetModelName) : "any";
                 // Handle belongsToMany with pivot columns: intersect element type with pivot shape
                 if (rel.pivotColumns) {
                     const pivotCols: string[] = rel.pivotColumns as any;
@@ -317,7 +323,9 @@ export class PrismaToTypesGenerator {
         );
 
         return {
-            name: model.name,
+            name: modelName(model.name),
+            sourceName: model.name,
+            tableName: model.dbName ?? model.name,
             fields: [...fields, ...relationships],
             appends,
             imports,

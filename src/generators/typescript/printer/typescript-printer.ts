@@ -511,7 +511,7 @@ export class TsPrinter {
    private hasModelSpecificStub(model: TsModelDefinition): boolean {
       if (!this.stubConfig?.stubDir) return false;
 
-      const key = (model as any).tableName || model.name;
+      const key = (model as any).tableName || (model as any).sourceName || model.name;
       const stubPath = resolveStub(this.stubConfig, "ts", key);
       if (!stubPath) return false;
 
@@ -533,7 +533,7 @@ export class TsPrinter {
          return parts.join("\n\n") + "\n";
       }
 
-      const key = (model as any).tableName || model.name;
+      const key = (model as any).tableName || (model as any).sourceName || model.name;
       const stubPath = resolveStub(this.stubConfig, "ts", key);
       if (!stubPath || path.basename(stubPath) === "index.stub") {
          // No specific stub (or only index) → default: imports + body

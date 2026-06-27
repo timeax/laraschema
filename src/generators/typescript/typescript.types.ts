@@ -23,6 +23,8 @@ export interface TsAppendProperty {
 
 export interface TsModelDefinition {
    name: string;
+   sourceName?: string;
+   tableName?: string;
    fields: TsModelField[];
    appends: TsAppendProperty[];
    imports: TsImport[];

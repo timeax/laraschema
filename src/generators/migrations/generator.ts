@@ -6,6 +6,7 @@ import {DefaultMaps, Rule} from "./rules/rules.js";
 import { getConfig } from "@/core/config/config-store";
 import { decorate } from "@/shared/naming/decorate";
 import { isForMigrator, parseSilentDirective, parseUpdateDirective } from "@/shared/directives/parse-directives";
+import { applyModelInheritance, isAbstractModel } from "@/shared/directives/model-inheritance";
 /**
  * The shape returned by the generator—pure data, no rendering.
  */
@@ -29,10 +30,13 @@ export class PrismaToLaravelMigrationGenerator {
     private columnGen: ColumnDefinitionGenerator;
     private ruleResolver: RuleResolver;
 
-    constructor(private dmmf: DMMF.Document, customRules: Rule[] = [], defaultMaps: DefaultMaps = {}) {
-        this.columnGen = new ColumnDefinitionGenerator(dmmf);
-        this.ruleResolver = new RuleResolver(dmmf, customRules, defaultMaps);
+    constructor(dmmf: DMMF.Document, customRules: Rule[] = [], defaultMaps: DefaultMaps = {}) {
+        this.dmmf = applyModelInheritance(dmmf);
+        this.columnGen = new ColumnDefinitionGenerator(this.dmmf);
+        this.ruleResolver = new RuleResolver(this.dmmf, customRules, defaultMaps);
     }
+
+    private dmmf: DMMF.Document;
 
     /**
      * Given an array of ColumnDefinition, apply rules and return PHP snippets.
@@ -64,7 +68,7 @@ export class PrismaToLaravelMigrationGenerator {
     private buildModelIndexMap(): Map<string, DMMF.Index[]> {
         const indexMap = new Map<string, DMMF.Index[]>();
 
-        for (const idx of this.dmmf.datamodel.indexes) {
+        for (const idx of this.dmmf.datamodel.indexes ?? []) {
             if (idx.isDefinedOnField) continue;
 
             const modelIndexes = indexMap.get(idx.model) ?? [];
@@ -116,7 +120,9 @@ export class PrismaToLaravelMigrationGenerator {
      */
     public generateAll(): Migration[] {
         const indexMap = this.buildModelIndexMap();
-        return this.dmmf.datamodel.models.map(model => this.resolveModel(model, indexMap));
+        return this.dmmf.datamodel.models
+            .filter(model => !isAbstractModel(model))
+            .map(model => this.resolveModel(model, indexMap));
     }
 
     /**

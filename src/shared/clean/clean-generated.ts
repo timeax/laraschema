@@ -18,6 +18,7 @@ const BUILT_IN_DIRECTIVES = [
     "use",
     "extend",
     "abstract",
+    "inherits",
     "implements",
     "observer",
     "factory",

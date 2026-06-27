@@ -53,6 +53,22 @@ model UpdateDirectiveProbe {
   @@map("update_directive_probes")
 }
 
+/// @abstract
+model BaseRecord {
+  id         String   @id @default(uuid())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("base_records")
+}
+
+/// @inherits(BaseRecord)
+model Customer {
+  email String @unique /// @fillable
+
+  @@map("customers")
+}
+
 model Round {
   id            String        @id @default(uuid()) /// @fillable
   tournament_id String /// @fillable
