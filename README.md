@@ -101,6 +101,12 @@ Run generation:
 laraschema gen
 ```
 
+For a multi-file Prisma schema, point generation at the schema folder:
+
+```bash
+laraschema gen --schema=./prisma
+```
+
 Or use the short alias:
 
 ```bash
@@ -168,6 +174,15 @@ Use a custom config file:
 ```bash
 laraschema gen --config=prisma/laraschema.config.js
 ```
+
+Use a custom Prisma schema file or folder:
+
+```bash
+laraschema gen --schema=prisma/schema.prisma
+laraschema gen --schema=prisma
+```
+
+When `--schema` points to a folder, LaraSchema includes nested `.prisma` files in that folder, matching Prisma's multi-file schema layout.
 
 Skip the `prisma generate` step and only run LaraSchema generators:
 
@@ -405,7 +420,7 @@ module.exports = {
 | Key                  | Purpose                                                                  |
 | -------------------- | ------------------------------------------------------------------------ |
 | `rootDir`            | Optional Laravel app root used to resolve generated outputs and backups. |
-| `schemaPath`         | Optional Prisma schema path override used by `laraschema gen`.           |
+| `schemaPath`         | Optional Prisma schema file or folder override used by `laraschema gen`. |
 | `tablePrefix`        | Prefix added to generated physical table names.                          |
 | `tableSuffix`        | Suffix added to generated physical table names.                          |
 | `stubDir`            | Root folder for project-owned stubs.                                     |

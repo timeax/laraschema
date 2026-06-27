@@ -7,17 +7,24 @@ import {generateTypesFromPrisma} from "@/generators/typescript/index.js";
 import {spawn} from "child_process";
 import {loadConfig} from "@/core/config/load-config.js";
 import {GeneratorOptions} from "@prisma/generator-helper";
-import {loadMergedDatamodel} from '@/core/prisma/load-merged-datamodel';
+import {loadPrismaSchema} from '@/core/prisma/load-merged-datamodel';
 import {getLaravelGeneratorConfigs} from '@/core/prisma/generator-configs';
 import {getDMMF} from '@/core/prisma/dmmf';
+
+type GenerateOptions = {
+    config?: string;
+    schema?: string;
+    skipGenerate?: boolean;
+};
 
 export function registerGenerateCommand(cli: Command) {
     cli
         .command('gen')
         .description('Run Prisma generate (unless --skipGenerate), then run Laravel + TS generators')
         .option('--config <path>', 'Path to laraschema config file')
+        .option('-s, --schema <path>', 'Prisma schema file or folder')
         .option('--skipGenerate', 'Only run the Laravel/TS generators (no Prisma generate)')
-        .action(async (opts: { config?: string; skipGenerate?: boolean }) => {
+        .action(async (opts: GenerateOptions) => {
             const configPath = opts.config
                 ? path.resolve(process.cwd(), opts.config)
                 : path.resolve(process.cwd(), 'laraschema.config.js');
@@ -28,7 +35,7 @@ export function registerGenerateCommand(cli: Command) {
             }
 
             try {
-                await runGenerators(configPath, !!opts.skipGenerate);
+                await runGenerators(configPath, !!opts.skipGenerate, opts.schema);
                 console.log('Generation complete.');
             } catch (e: any) {
                 console.error('Gen failed:', e?.message ?? e);
@@ -37,22 +44,27 @@ export function registerGenerateCommand(cli: Command) {
         });
 }
 
-export async function runGenerators(configPath: string, skipPrismaGenerate = false) {
-    let schemaPrismaPath = path.resolve(process.cwd(), "prisma/schema.prisma");
+export async function runGenerators(configPath: string, skipPrismaGenerate = false, schemaPath?: string) {
+    let resolvedSchemaPath = path.resolve(process.cwd(), "prisma/schema.prisma");
     if (existsSyncFs(configPath)) {
         const cfgMod = await loadConfig(configPath);
         const cfg = (cfgMod as any).default ?? cfgMod;
         if (cfg?.schemaPath) {
-            schemaPrismaPath = path.resolve(process.cwd(), cfg.schemaPath);
+            resolvedSchemaPath = path.resolve(process.cwd(), cfg.schemaPath);
         }
     }
 
-    if (!existsSyncFs(schemaPrismaPath)) {
-        throw new Error(`Schema not found: ${schemaPrismaPath}`);
+    if (schemaPath) {
+        resolvedSchemaPath = path.resolve(process.cwd(), schemaPath);
+    }
+
+    if (!existsSyncFs(resolvedSchemaPath)) {
+        throw new Error(`Schema not found: ${resolvedSchemaPath}`);
     }
 
     const doRun = async () => {
-        const datamodel = await loadMergedDatamodel(schemaPrismaPath);
+        const schema = await loadPrismaSchema(resolvedSchemaPath);
+        const datamodel = schema.datamodel;
         const {migCfg, modCfg, tsCfg} = await getLaravelGeneratorConfigs(datamodel);
         const dmmf = await getDMMF(datamodel);
 
@@ -60,9 +72,9 @@ export async function runGenerators(configPath: string, skipPrismaGenerate = fal
             return {
                 dmmf,
                 //@ts-ignore
-                generator: {config: conf, sourceFilePath: schemaPrismaPath,},
+                generator: {config: conf, sourceFilePath: schema.sourceFilePath,},
                 otherGenerators: [],
-                schemaPath: schemaPrismaPath,
+                schemaPath: schema.schemaPath,
                 datasources: [],
                 datamodel,
                 version: "",
@@ -78,7 +90,7 @@ export async function runGenerators(configPath: string, skipPrismaGenerate = fal
         await doRun();
     } else {
         await new Promise<void>((resolve, reject) => {
-            const prisma = spawn("npx", ["prisma", "generate"], {
+            const prisma = spawn("npx", ["prisma", "generate", `--schema=${resolvedSchemaPath}`], {
                 stdio: "inherit",
                 shell: true,
             });
