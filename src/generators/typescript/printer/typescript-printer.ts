@@ -310,68 +310,67 @@ export class TsPrinter {
    }
 
    /**
-    * Merge & dedupe imports from multiple model contexts.
-    *
-    * We re-parse the per-model import lines into TsImport objects so that
-    * `normalizeTsImports` can group everything by `from` and merge type lists.
-    */
+ * Merge & dedupe type references from multiple model contexts.
+ *
+ * For ambient declaration output, avoid top-level imports because they turn
+ * the .d.ts file into an external module. Instead emit import-type aliases:
+ *
+ * type A = import("./enums").A;
+ * type B = import("./enums").B;
+ */
    private collectImports(ctxs: TsModelContext[]): string {
       const collected: TsImport[] = [];
 
-      // Very small parser for lines like: import { A, B } from "./enums";
+      // Handles:
+      // import { A, B } from "./enums";
       const importRe =
          /^import\s*\{\s*([^}]+)\}\s*from\s*(['"])([^'"]+)\2;?$/;
 
       for (const ctx of ctxs) {
          const raw = (ctx.imports || "").replace(/\r\n/g, "\n");
-         if (!raw.trim()) continue;
+
+         if (!raw.trim()) {
+            continue;
+         }
 
          for (const line of raw.split("\n")) {
             const trimmed = line.trim();
-            if (!trimmed) continue;
 
-            const m = importRe.exec(trimmed);
-            if (!m) {
-               // If it's some other kind of import (`import "./x"`), just keep it as-is
-               // by treating it as a TsImport with empty type list.
-               if (trimmed.startsWith("import ")) {
-                  collected.push({
-                     from: trimmed, // sentinel; will emit as-is below
-                     types: [], // no types
-                  } as any);
-               }
+            if (!trimmed) {
                continue;
             }
 
-            const typeList = m[1]
-               .split(",")
-               .map((t) => t.trim())
-               .filter(Boolean);
-            const from = m[3];
+            const match = importRe.exec(trimmed);
 
-            collected.push({ from, types: typeList });
+            if (!match) {
+               // We intentionally do not preserve arbitrary top-level imports here.
+               // Ambient declaration files must remain scripts rather than modules.
+               continue;
+            }
+
+            const types = match[1]
+               .split(",")
+               .map((type) => type.trim())
+               .filter(Boolean);
+
+            const from = match[3];
+
+            collected.push({
+               from,
+               types,
+            });
          }
       }
 
-      // Split “raw” imports (non `{ A } from "x"` style) from structured ones
-      const rawLines = collected
-         .filter((imp) => !imp.types?.length && imp.from.startsWith("import "))
-         .map((imp) => imp.from);
+      const normalized = this.normalizeTsImports(collected);
 
-      const structured = collected.filter(
-         (imp) => imp.types && imp.types.length && !imp.from.startsWith("import "),
+      const aliases = normalized.flatMap((imp) =>
+         imp.types.map(
+            (type) => `type ${type} = import(${JSON.stringify(imp.from)}).${type};`,
+         ),
       );
 
-      const normalized = this.normalizeTsImports(structured);
-
-      const structuredLines = normalized.map(
-         (i) => `import { ${i.types.join(", ")} } from ${JSON.stringify(i.from)};`,
-      );
-
-      // Deduplicate everything
-      const allLines = Array.from(new Set([...rawLines, ...structuredLines]));
-
-      return allLines.join("\n");
+      return Array.from(new Set(aliases)).join("\n");
    }
    // ---------------------------------------------------------------------------
    // MODEL RENDERING (DEFAULT)

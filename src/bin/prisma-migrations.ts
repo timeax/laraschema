@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-import { generateLaravelSchema } from "../generators/migrations/index.js";
+import { generateLaravelSchema } from "@/generators/migrations";
 import helperPkg from "@prisma/generator-helper";
 import path from "node:path";
-import { loadSharedConfig } from "../core/config/load-shared-config.js";
+import { loadSharedConfig } from "@/core/config/load-shared-config";
 
 const { generatorHandler } = helperPkg;
 

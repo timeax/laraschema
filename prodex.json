@@ -1,0 +1,47 @@
+{
+    "version": 5,
+    "$schema": "https://raw.githubusercontent.com/emxhive/prodex/main/schema/prodex.schema.json",
+    "output": {
+        "dir": "prodex",
+        "versioned": true,
+        "format": "md"
+    },
+    "exclude": [
+        "node_modules/**",
+        "vendor/**",
+        "dist/**"
+    ],
+    "aliases": {
+        "@": "resources/js"
+    },
+    "depth": 2,
+    "maxFiles": 1000,
+    "scopes": {
+        "core": {
+            "name": "core-logic",
+            "include": ["src/core/**", "src/shared/**"]
+        },
+        "generators": {
+            "name": "all-generators",
+            "include": ["src/generators/**", "stubs/**"]
+        },
+        "migrations": {
+            "name": "migration-generator",
+            "entry": ["src/generators/migrations/index.ts"],
+            "include": ["src/generators/migrations/**", "stubs/migrations/**"]
+        },
+        "models": {
+            "name": "model-generator",
+            "include": ["src/shared/**"]
+        },
+        "utilities": {
+            "name": "shared-utilities",
+            "include": ["src/generators/models/**", "stubs/models/**"]
+        },
+        "cli": {
+            "name": "cli-entrypoints",
+            "entry": ["src/bin/*.ts"],
+            "include": ["src/cli/**"]
+        }
+    }
+}
