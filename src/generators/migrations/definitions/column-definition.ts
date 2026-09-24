@@ -112,7 +112,7 @@ export class ColumnDefinitionGenerator {
             );
             base.migrationType = MigrationTypes.enum;
             //---
-            const args = enumMeta?.values.map((v) => v.name);
+            const args = enumMeta?.values.map((v) => v.dbName ?? v.name);
             base.args = args ? [args] : [];
         }
 
