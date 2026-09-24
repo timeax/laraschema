@@ -40,7 +40,10 @@ export class PrismaToLaravelModelGenerator {
         const enums: EnumDefinition[] = this.dmmf.datamodel.enums.map((e) => ({
             name: e.name,
             namespace: resolvedEnumNamespace,
-            values: e.values.map((v) => v.name),
+            values: e.values.map((v) => ({
+                name: v.name,
+                value: v.dbName ?? v.name,
+            })),
         }));
 
         // 2) Build each ModelDefinition

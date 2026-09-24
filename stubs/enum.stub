@@ -25,5 +25,8 @@ namespace ${enumDef.namespace};
 
 enum ${enumDef.name}: string
 {
-${enumDef.values.map(v => `    case ${v} = '${v}';`).join('\n')}
+${enumDef.values.map(({name, value}) => {
+    const escaped = value.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    return `    case ${name} = '${escaped}';`;
+}).join('\n')}
 }

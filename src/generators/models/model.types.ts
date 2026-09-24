@@ -4,7 +4,7 @@ import {ParsedCustomDirectiveMap} from "@/shared/directives/custom-directive.typ
 /** Reuse these from your model‐generator file */
 export interface EnumDefinition {
     name: string;
-    values: string[];
+    values: Array<{ name: string; value: string }>;
     namespace: string; // for imported types
 }
 
